@@ -1,16 +1,12 @@
-import { useEffect } from "react";
-import "./App.css";
-import { Excalidraw } from "@excalidraw/excalidraw";
+import { Excalidraw } from '@excalidraw/excalidraw'
+import './App.css'
 
 function App() {
-  useEffect(() => {
-    console.log(document.documentElement.style);
-  }, []);
   return (
     <div className="container">
       <Excalidraw />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

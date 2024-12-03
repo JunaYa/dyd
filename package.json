@@ -1,12 +1,13 @@
 {
   "name": "dyd",
-  "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "lint": "eslint --fix",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -17,11 +18,13 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^3.11.2",
     "@tauri-apps/cli": "^2.1.0",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.16.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.1"
   }
