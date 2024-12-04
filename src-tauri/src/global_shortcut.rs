@@ -8,6 +8,7 @@ use crate::{platform, window};
 const DEFUALT_HOTKEY_A: &str = "CmdOrCtrl+Shift+A";
 const DEFUALT_HOTKEY_S: &str = "CmdOrCtrl+Shift+S";
 const DEFUALT_HOTKEY_W: &str = "CmdOrCtrl+Shift+W";
+const DEFUALT_HOTKEY_E: &str = "CmdOrCtrl+Shift+E";
 
 pub fn register_global_shortcut(app: &tauri::App) -> anyhow::Result<()> {
     info!("Registering global shortcuts");
@@ -22,6 +23,8 @@ pub fn register_global_shortcut(app: &tauri::App) -> anyhow::Result<()> {
     let shift_ctrl_s_shortcut = Shortcut::from_str(DEFUALT_HOTKEY_S)?;
     // capture_window: ctrl + shift + W
     let shift_ctrl_w_shortcut = Shortcut::from_str(DEFUALT_HOTKEY_W)?;
+    // exit: ctrl + shift + E
+    let shift_ctrl_e_shortcut = Shortcut::from_str(DEFUALT_HOTKEY_E)?;
 
     if !shortcuts.is_registered(shift_ctrl_a_shortcut) {
         app.global_shortcut().register(shift_ctrl_a_shortcut)?;
@@ -33,6 +36,10 @@ pub fn register_global_shortcut(app: &tauri::App) -> anyhow::Result<()> {
 
     if !shortcuts.is_registered(shift_ctrl_w_shortcut) {
         app.global_shortcut().register(shift_ctrl_w_shortcut)?;
+    }
+
+    if !shortcuts.is_registered(shift_ctrl_e_shortcut) {
+        app.global_shortcut().register(shift_ctrl_e_shortcut)?;
     }
 
     Ok(())
@@ -94,6 +101,15 @@ pub fn tauri_plugin_global_shortcut() -> TauriPlugin<tauri::Wry> {
                     }
                     ShortcutState::Released => {
                         info!("Capture Window Released!");
+                    }
+                }
+            } else if shortcut.id == Shortcut::from_str(DEFUALT_HOTKEY_E).unwrap().id {
+                match event.state() {
+                    ShortcutState::Pressed => {
+                        window::show_main_window(app);
+                    }
+                    ShortcutState::Released => {
+                        info!("Show Main Window Released!");
                     }
                 }
             }
