@@ -1,0 +1,13 @@
+{
+  "identifier": "dialog-capability",
+  "description": "Allow to open a dialog",
+  "local": true,
+  "windows": ["main", "setting"],
+  "permissions": [
+    "dialog:allow-ask",
+    "dialog:allow-confirm",
+    "dialog:allow-message",
+    "dialog:allow-open",
+    "dialog:allow-save"
+  ]
+}
