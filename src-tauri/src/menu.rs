@@ -69,13 +69,6 @@ pub fn get_tray_menu(app: &AppHandle) -> Result<Menu<tauri::Wry>, tauri::Error> 
             None::<&str>,
         )?,
         &PredefinedMenuItem::separator(app)?,
-        &MenuItem::with_id(
-            app,
-            MenuID::SHOW_SETTING_WINDOW.to_string(),
-            "Setting Manager",
-            true,
-            None::<&str>,
-        )?,
         &MenuItem::with_id(app, MenuID::EXIT.to_string(), "Exit", true, None::<&str>)?,
     ])?;
 
