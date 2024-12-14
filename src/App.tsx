@@ -23,9 +23,26 @@ function App() {
 
   return (
     <div className="container">
-      <Excalidraw initialData={{
-        appState: { viewBackgroundColor: '#FFFFFF00' },
-      }}
+      <Excalidraw
+        initialData={{
+          appState: { viewBackgroundColor: '#FFFFFF00' },
+        }}
+        renderTopRightUI={() => {
+          return (
+            <button
+              style={{
+                background: '#70b1ec',
+                border: 'none',
+                color: '#fff',
+                width: 'max-content',
+                fontWeight: 'bold',
+              }}
+              onClick={() => window.alert('This is dummy top right UI')}
+            >
+              Click me
+            </button>
+          )
+        }}
       >
         {renderMenu()}
       </Excalidraw>
