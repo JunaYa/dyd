@@ -75,12 +75,14 @@ pub fn get_main_window(app: &AppHandle) -> WebviewWindow {
     } else {
         let win_builder = WebviewWindowBuilder::new(app, MAIN_WINDOW, WebviewUrl::App("/".into()))
             .title("dyd")
-            .title_bar_style(TitleBarStyle::Transparent)
             .transparent(true)
             .skip_taskbar(true)
             .maximized(true)
             .decorations(false)
             .inner_size(800.0, 600.0);
+
+        #[cfg(target_os = "macos")]
+        let win_builder = win_builder.title_bar_style(TitleBarStyle::Transparent);
 
         let window = win_builder.build().unwrap();
 
@@ -97,7 +99,7 @@ pub fn get_main_window(app: &AppHandle) -> WebviewWindow {
                     33.0 / 255.0,
                     54.0 / 255.0,
                     201.0 / 255.0,
-                    0.0,
+                    0.3,
                 );
                 ns_window.setBackgroundColor_(bg_color);
             }
