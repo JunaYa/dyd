@@ -1,4 +1,5 @@
 import { Excalidraw, MainMenu } from '@excalidraw/excalidraw'
+import '@excalidraw/excalidraw/index.css'
 import './App.css'
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
                 width: 'max-content',
                 fontWeight: 'bold',
               }}
+              // eslint-disable-next-line no-alert -- This demo control intentionally opens a native alert.
               onClick={() => window.alert('This is dummy top right UI')}
             >
               Click me

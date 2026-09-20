@@ -41,7 +41,7 @@ fn window_capture(path: PathBuf) -> Result<String, String> {
     let mut filename = String::new();
     for window in windows {
         // 最小化的窗口不能截屏
-        if window.is_minimized() {
+        if window.is_minimized().map_err(|e| e.to_string())? {
             continue;
         }
 
@@ -58,7 +58,7 @@ fn window_capture(path: PathBuf) -> Result<String, String> {
             "{}-{}-{}.png",
             Local::now().format("%Y%m%d_%H%M%S"),
             i,
-            normalized(window.title())
+            normalized(&window.title().map_err(|e| e.to_string())?)
         );
 
         let output_path = path.join(&filename);
@@ -87,7 +87,7 @@ fn monitor_capture(path: PathBuf) -> Result<String, String> {
         filename = format!(
             "{}-{}.png",
             Local::now().format("%Y%m%d_%H%M%S"),
-            normalized(monitor.name())
+            normalized(&monitor.name().map_err(|e| e.to_string())?)
         );
 
         let output_path = path.join(&filename);

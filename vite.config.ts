@@ -1,3 +1,4 @@
+import { cpSync } from 'node:fs'
 import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -6,11 +7,23 @@ const host = process.env.TAURI_DEV_HOST
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'excalidraw-fonts',
+      buildStart() {
+        cpSync(
+          path.resolve(import.meta.dirname, 'node_modules/@excalidraw/excalidraw/dist/prod/fonts'),
+          path.resolve(import.meta.dirname, 'public/excalidraw/fonts'),
+          { recursive: true },
+        )
+      },
+    },
+  ],
 
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, 'src'),
+      '~': path.resolve(import.meta.dirname, 'src'),
     },
   },
 
