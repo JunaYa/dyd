@@ -1,5 +1,10 @@
 # Dependency upgrade — 2026-09-20
 
+This is the historical record for commit `0597adb`. The subsequent
+[code-quality migration](code-quality.md) replaced ESLint with Oxlint/Oxfmt and
+removed the TypeScript 6 compatibility package. Use that guide for current lint
+and formatting commands.
+
 ## Versions
 
 Direct dependencies were checked against npm's `latest` tag and crates.io's

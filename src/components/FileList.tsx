@@ -21,7 +21,7 @@ function FileList() {
 
     const entries = await readDir(val?.value ? `${val?.value}/images` : '')
 
-    const tList = entries.map(entry => ({
+    const tList = entries.map((entry) => ({
       id: entry.name,
       url: `${val?.value}/images/${entry.name}`,
       name: entry.name,
@@ -38,7 +38,7 @@ function FileList() {
 
   return (
     <div>
-      {list.map(item => (
+      {list.map((item) => (
         <div key={item.id}>
           <div>{item.name}</div>
           <div>{item.size}</div>

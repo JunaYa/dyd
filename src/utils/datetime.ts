@@ -15,5 +15,11 @@ export function formatTime(time: Date, format: string) {
   const minute = time.getMinutes()
   const second = time.getSeconds()
 
-  return format.replace('YYYY', year.toString()).replace('MM', month.toString()).replace('DD', day.toString()).replace('HH', hour.toString()).replace('mm', minute.toString()).replace('ss', second.toString())
+  return format
+    .replace('YYYY', year.toString())
+    .replace('MM', month.toString())
+    .replace('DD', day.toString())
+    .replace('HH', hour.toString())
+    .replace('mm', minute.toString())
+    .replace('ss', second.toString())
 }

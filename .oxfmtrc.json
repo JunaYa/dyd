@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "trailingComma": "all",
+  "sortImports": {},
+  "ignorePatterns": ["src-tauri/**", "public/**", "docs/**", "*.md", "pnpm-lock.yaml"]
+}

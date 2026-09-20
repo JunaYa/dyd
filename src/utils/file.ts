@@ -12,7 +12,17 @@ class FileSizeFormatter {
   private static readonly DECIMAL = 1000
   private static readonly BINARY = 1024
   private static readonly UNITS_DECIMAL = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-  private static readonly UNITS_BINARY = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+  private static readonly UNITS_BINARY = [
+    'B',
+    'KiB',
+    'MiB',
+    'GiB',
+    'TiB',
+    'PiB',
+    'EiB',
+    'ZiB',
+    'YiB',
+  ]
 
   static format(bytes: number, options: FormatOptions = {}): string {
     const {
@@ -25,8 +35,7 @@ class FileSizeFormatter {
       binary = true,
     } = options
 
-    if (bytes === 0)
-      return `0${separator}B`
+    if (bytes === 0) return `0${separator}B`
 
     const base = binary ? this.BINARY : this.DECIMAL
     const units = binary ? this.UNITS_BINARY : this.UNITS_DECIMAL
@@ -45,11 +54,8 @@ class FileSizeFormatter {
         minimumFractionDigits: pad ? decimals : 0,
         maximumFractionDigits: decimals,
       })
-    }
-    else {
-      formattedValue = pad
-        ? roundedValue.toFixed(decimals)
-        : roundedValue.toString()
+    } else {
+      formattedValue = pad ? roundedValue.toFixed(decimals) : roundedValue.toString()
 
       if (stripTrailingZeros) {
         formattedValue = Number.parseFloat(formattedValue).toString()
