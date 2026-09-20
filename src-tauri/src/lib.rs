@@ -1,5 +1,5 @@
 use serde_json::json;
-use tauri::{ActivationPolicy, Manager};
+use tauri::Manager;
 use tauri_plugin_store::StoreExt;
 
 mod cmd;
@@ -8,6 +8,7 @@ mod constants;
 mod global_shortcut;
 mod menu;
 mod platform;
+mod settings;
 mod window;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -17,7 +18,7 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
             #[cfg(desktop)]
-            configure_autostart(app);
+            configure_autostart(app)?;
 
             #[cfg(desktop)]
             let _ = global_shortcut::register_global_shortcut(app);
@@ -26,25 +27,38 @@ pub fn run() {
 
             menu::create_tray(app)?;
 
-            let app_local_data = app
-                .path()
-                .app_local_data_dir()
-                .expect("could not resolve app local data path");
             let store = app.store("settings.json")?;
-            store.set(
-                "screenshot_path".to_string(),
-                json!({ "value": app_local_data.to_string_lossy() }),
-            );
+            // StoreBuilder ignores load errors; reject unreadable settings before any writes.
+            if app
+                .path()
+                .app_data_dir()?
+                .join("settings.json")
+                .try_exists()?
+            {
+                store.reload()?;
+            }
+            let saved_path = store.get("screenshot_path");
+            let first_run = store.get("first_run");
+            let needs_startup = settings::needs_startup(first_run.as_ref(), saved_path.as_ref())
+                .map_err(std::io::Error::other)?;
+            if needs_startup {
+                store.set("first_run", json!({ "value": false }));
+                store.save()?;
+            }
+            if saved_path.is_none() {
+                let app_local_data = app.path().app_local_data_dir()?;
+                store.set("screenshot_path", json!({ "value": app_local_data }));
+                store.save()?;
+            }
 
-            // check if first run
-            let value = store
-                .get("first_run")
-                .unwrap_or_else(|| json!({ "value": false }));
-            if value.is_null() {
-                store.set("first_run".to_string(), json!({ "value": true }));
+            if needs_startup {
                 window::show_startup_window(&app.handle());
             } else {
                 window::show_main_window(&app.handle());
+            }
+            if first_run.as_ref() != Some(&json!({ "value": true })) {
+                store.set("first_run", json!({ "value": true }));
+                store.save()?;
             }
 
             Ok(())
@@ -73,17 +87,17 @@ pub fn run() {
 }
 
 #[cfg(desktop)]
-fn configure_autostart(app: &tauri::App) {
+fn configure_autostart(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     use tauri_plugin_autostart::MacosLauncher;
     use tauri_plugin_autostart::ManagerExt;
 
-    let _ = app.handle().plugin(tauri_plugin_autostart::init(
+    app.handle().plugin(tauri_plugin_autostart::init(
         MacosLauncher::LaunchAgent,
-        Some(vec!["--flag1", "--flag2"]),
-    ));
-
-    // Get the autostart manager
-    let autostart_manager = app.autolaunch();
-    // Enable autostart
-    let _ = autostart_manager.enable();
+        None,
+    ))?;
+    match app.autolaunch().is_enabled() {
+        Ok(enabled) => tracing::info!(enabled, "Current autostart preference"),
+        Err(error) => tracing::warn!(%error, "Could not read autostart preference"),
+    }
+    Ok(())
 }

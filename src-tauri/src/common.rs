@@ -16,17 +16,15 @@ pub fn get_images_dir(app_handle: &tauri::AppHandle, path: String) -> Result<Pat
         .ok_or_else(|| "Screenshot path not found in settings".to_string())?;
     info!("screenshot_path: {:?}", screenshot_path);
 
-    // get value from Option<JsonValue>
-    let screenshot_path = screenshot_path
-        .as_object()
-        .and_then(|obj| obj.get("value"))
-        .and_then(|value| value.as_str())
-        .unwrap();
+    let screenshot_path = crate::settings::screenshot_path(&screenshot_path)?;
 
     // 获取 AppLocalData 路径
     // 如果 screenshot_path 为空，则使用 app_local_data
     let app_local_data = if screenshot_path.is_empty() {
-        app_handle.path().app_local_data_dir().unwrap()
+        app_handle
+            .path()
+            .app_local_data_dir()
+            .map_err(|e| e.to_string())?
     } else {
         PathBuf::from(screenshot_path)
     };
