@@ -26,3 +26,6 @@ jobs:
 
       - name: Run build
         run: pnpm run build
+
+      - name: Test development launcher
+        run: pnpm run test:dev

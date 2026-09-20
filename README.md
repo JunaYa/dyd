@@ -21,3 +21,11 @@ Why did I make Excalidraw into a desktop application?
 
 - src-tauri: Desktop application written in Rust
 - src: Web application written in React
+
+## Local Development
+
+Run `pnpm tauri dev` to launch the desktop app. The launcher starts Vite on port 1420, or the next available port, and passes the actual URL to Tauri. Hot reload shares that port. Exiting closes the server started by this launch without stopping other applications.
+
+For the browser only, run `pnpm dev` and open the URL printed in the terminal. Other commands, including `pnpm tauri build`, pass through to the Tauri CLI. Automatic URL synchronization requires `pnpm tauri dev`; direct `cargo tauri dev` or `pnpm exec tauri dev` commands bypass the launcher.
+
+Run `pnpm test:dev` to check port fallback, argument forwarding, and shutdown without compiling Rust.

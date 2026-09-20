@@ -11,7 +11,8 @@
     "lint:fix": "oxlint --fix .",
     "fmt": "oxfmt --write .",
     "fmt:check": "oxfmt --check .",
-    "tauri": "tauri"
+    "tauri": "node scripts/tauri.mjs",
+    "test:dev": "node --test scripts/tauri.test.mjs"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.1",

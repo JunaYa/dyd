@@ -21,3 +21,11 @@ DYD 是一款轻量级，跨平台的绘图应用。使用 Excalidraw 作为绘�
 
 - src-tauri: 使用 Rust 编写的桌面应用
 - src: 使用 React 编写的网页应用
+
+## 本地开发
+
+运行 `pnpm tauri dev` 启动桌面应用。启动脚本先启动 Vite：优先使用 1420，被占用时依次尝试后续端口，再把实际地址传给 Tauri。热更新共用该端口；退出后关闭此次启动的服务，不结束占用原端口的其他程序。
+
+仅调试网页时运行 `pnpm dev`，使用终端显示的地址。`pnpm tauri build` 等其他命令保持原有行为。自动同步端口通过项目的 `pnpm tauri dev` 入口实现，直接运行 `cargo tauri dev` 或 `pnpm exec tauri dev` 不经过该脚本。
+
+运行 `pnpm test:dev` 验证端口冲突、CLI 参数转发和退出清理，无需编译 Rust。
