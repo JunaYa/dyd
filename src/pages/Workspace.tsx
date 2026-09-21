@@ -2,6 +2,7 @@ import { invoke, isTauri } from '@tauri-apps/api/core'
 import { LazyStore } from '@tauri-apps/plugin-store'
 import { useEffect, useState } from 'react'
 
+import { CapturePanel } from '../CapturePanel'
 import { WindowLinks } from '../WindowLinks'
 
 const store = new LazyStore('settings.json')
@@ -127,14 +128,11 @@ export function Workspace({ page }: { page: string }) {
         </section>
       )}
       {page === '/startup' && <StartDrawing />}
-      {(page === '/editor' || page === '/history') && (
+      {(page === '/editor' || page === '/preview') && <CapturePanel />}
+      {page === '/history' && (
         <section className="workspace-card empty-state">
-          <h2>{page === '/editor' ? '图片加载尚未接通' : '历史项目尚未接通'}</h2>
-          <p>
-            {page === '/editor'
-              ? '截图项目加载与编辑功能将在后续版本提供。现在可以继续使用白板。'
-              : '此页暂不读取已有截图，不表示原文件已删除。历史索引将在后续版本接入。'}
-          </p>
+          <h2>历史项目尚未接通</h2>
+          <p>此页暂不读取已有截图，不表示原文件已删除。历史索引将在后续版本接入。</p>
         </section>
       )}
       <WindowLinks current={content.name} />

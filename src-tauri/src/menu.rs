@@ -1,14 +1,14 @@
-use std::{str::FromStr, thread::sleep, time::Duration};
+use std::str::FromStr;
 
 use strum_macros::{Display, EnumString};
 use tauri::{
     menu::{Menu, MenuEvent, MenuItem, PredefinedMenuItem, Submenu},
     tray::{TrayIcon, TrayIconBuilder, TrayIconEvent},
-    AppHandle, Emitter,
+    AppHandle,
 };
 use tracing::info;
 
-use crate::{platform, window};
+use crate::{capture, capture_task::CaptureKind, window};
 
 #[derive(Debug, Display, EnumString)]
 #[allow(non_camel_case_types, clippy::upper_case_acronyms)]
@@ -155,47 +155,9 @@ fn handle_tray_menu_events(app: &AppHandle, event: MenuEvent) {
     };
 
     match menu_id {
-        MenuID::CAPTURE_SCREEN => {
-            info!("Capture Screen");
-            // 获取到 file na
-            let filename = tauri::async_runtime::block_on(platform::capture_screen(
-                &app,
-                "images".to_string(),
-            ));
-            window::hide_main_window(app);
-            let window = window::show_preview_window(app);
-            // notify preview window payload
-            tauri::async_runtime::spawn(async move {
-                sleep(Duration::from_millis(500));
-                window.emit("image-prepared", filename).unwrap();
-            });
-        }
-        MenuID::CAPTURE_SELECT => {
-            info!("Capture Select");
-            let filename = tauri::async_runtime::block_on(platform::capture_select(
-                &app,
-                "images".to_string(),
-            ));
-            window::hide_main_window(app);
-            let window = window::show_preview_window(app);
-            tauri::async_runtime::spawn(async move {
-                sleep(Duration::from_millis(500));
-                window.emit("image-prepared", filename).unwrap();
-            });
-        }
-        MenuID::CAPTURE_WINDOW => {
-            info!("Capture Window");
-            let filename = tauri::async_runtime::block_on(platform::capture_window(
-                &app,
-                "images".to_string(),
-            ));
-            window::hide_main_window(app);
-            let window = window::show_preview_window(app);
-            tauri::async_runtime::spawn(async move {
-                sleep(Duration::from_millis(500));
-                window.emit("image-prepared", filename).unwrap();
-            });
-        }
+        MenuID::CAPTURE_SCREEN => capture::start_from_menu(app, CaptureKind::Screen),
+        MenuID::CAPTURE_SELECT => capture::start_from_menu(app, CaptureKind::Select),
+        MenuID::CAPTURE_WINDOW => capture::start_from_menu(app, CaptureKind::Window),
         MenuID::SHOW_MAIN_WINDOW => {
             info!("Show Home");
             window::show_main_window(&app);

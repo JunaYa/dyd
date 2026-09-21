@@ -1,9 +1,9 @@
-use std::{str::FromStr, thread::sleep, time::Duration};
-use tauri::{plugin::TauriPlugin, Emitter};
+use std::str::FromStr;
+use tauri::plugin::TauriPlugin;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 use tracing::info;
 
-use crate::{platform, window};
+use crate::{capture, capture_task::CaptureKind, window};
 
 const DEFUALT_HOTKEY_A: &str = "CmdOrCtrl+Shift+A";
 const DEFUALT_HOTKEY_S: &str = "CmdOrCtrl+Shift+S";
@@ -48,70 +48,17 @@ pub fn register_global_shortcut(app: &tauri::App) -> anyhow::Result<()> {
 pub fn tauri_plugin_global_shortcut() -> TauriPlugin<tauri::Wry> {
     tauri_plugin_global_shortcut::Builder::new()
         .with_handler(move |app, shortcut, event| {
+            if event.state() != ShortcutState::Pressed {
+                return;
+            }
             if shortcut.id == Shortcut::from_str(DEFUALT_HOTKEY_A).unwrap().id {
-                match event.state() {
-                    ShortcutState::Pressed => {
-                        info!("Capture Screen Pressed!");
-                        let filename = tauri::async_runtime::block_on(platform::capture_screen(
-                            &app,
-                            "images".to_string(),
-                        ));
-                        window::hide_main_window(&app);
-                        let window = window::show_preview_window(&app);
-                        tauri::async_runtime::spawn(async move {
-                            sleep(Duration::from_millis(500));
-                            window.emit("image-prepared", filename).unwrap();
-                        });
-                    }
-                    ShortcutState::Released => {
-                        info!("Capture Screen Released!");
-                    }
-                }
+                capture::start_from_menu(app, CaptureKind::Screen);
             } else if shortcut.id == Shortcut::from_str(DEFUALT_HOTKEY_S).unwrap().id {
-                match event.state() {
-                    ShortcutState::Pressed => {
-                        let filename = tauri::async_runtime::block_on(platform::capture_select(
-                            &app,
-                            "images".to_string(),
-                        ));
-                        window::hide_main_window(app);
-                        let window = window::show_preview_window(app);
-                        tauri::async_runtime::spawn(async move {
-                            sleep(Duration::from_millis(500));
-                            window.emit("image-prepared", filename).unwrap();
-                        });
-                    }
-                    ShortcutState::Released => {
-                        info!("Capture Select Released!");
-                    }
-                }
+                capture::start_from_menu(app, CaptureKind::Select);
             } else if shortcut.id == Shortcut::from_str(DEFUALT_HOTKEY_W).unwrap().id {
-                match event.state() {
-                    ShortcutState::Pressed => {
-                        let filename = tauri::async_runtime::block_on(platform::capture_window(
-                            &app,
-                            "images".to_string(),
-                        ));
-                        window::hide_main_window(app);
-                        let window = window::show_preview_window(app);
-                        tauri::async_runtime::spawn(async move {
-                            sleep(Duration::from_millis(500));
-                            window.emit("image-prepared", filename).unwrap();
-                        });
-                    }
-                    ShortcutState::Released => {
-                        info!("Capture Window Released!");
-                    }
-                }
+                capture::start_from_menu(app, CaptureKind::Window);
             } else if shortcut.id == Shortcut::from_str(DEFUALT_HOTKEY_E).unwrap().id {
-                match event.state() {
-                    ShortcutState::Pressed => {
-                        window::show_main_window(app);
-                    }
-                    ShortcutState::Released => {
-                        info!("Show Main Window Released!");
-                    }
-                }
+                window::show_main_window(app);
             }
         })
         .build()

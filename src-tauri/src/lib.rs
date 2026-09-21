@@ -2,6 +2,8 @@ use serde_json::json;
 use tauri::Manager;
 use tauri_plugin_store::StoreExt;
 
+mod capture;
+mod capture_task;
 mod cmd;
 mod common;
 mod constants;
@@ -14,6 +16,7 @@ mod window;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .manage(capture_task::CaptureTasks::default())
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
@@ -21,7 +24,9 @@ pub fn run() {
             configure_autostart(app)?;
 
             #[cfg(desktop)]
-            let _ = global_shortcut::register_global_shortcut(app);
+            if let Err(error) = global_shortcut::register_global_shortcut(app) {
+                tracing::warn!(%error, "Could not register capture shortcuts");
+            }
 
             // app.set_activation_policy(ActivationPolicy::Accessory);
 
@@ -73,6 +78,9 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             cmd::greet,
+            cmd::start_capture,
+            cmd::request_capture_permission,
+            cmd::get_capture_task,
             cmd::open_workspace_window,
             cmd::finish_startup,
             cmd::show_preview_window,
