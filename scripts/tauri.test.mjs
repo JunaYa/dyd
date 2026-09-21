@@ -10,7 +10,7 @@ import { test } from 'node:test'
 import { runTauri } from './tauri.mjs'
 
 async function occupy(port) {
-  const server = net.createServer()
+  const server = net.createServer((socket) => socket.destroy())
   server.listen(port, 'localhost')
   try {
     await once(server, 'listening')

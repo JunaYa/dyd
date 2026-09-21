@@ -1,31 +1,43 @@
-name: Frontend
+name: Checks
 
 on:
+  pull_request:
   push:
-    branches:
-      - dev
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  lint-and-test:
+  frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '24'
+      - name: Install locked dependencies
+        run: npm install --global pnpm@9.15.0 && pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm fmt:check
+      - run: pnpm build
+      - run: pnpm test:dev
 
-      - name: Install dependencies
-        run: npm i -g pnpm && pnpm i
-
-      - name: Run linter
-        run: pnpm run lint
-
-      - name: Check formatting
-        run: pnpm run fmt:check
-
-      - name: Run build
-        run: pnpm run build
-
-      - name: Test development launcher
-        run: pnpm run test:dev
+  macos:
+    runs-on: macos-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_INCREMENTAL: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@1.90.0
+      - name: Install locked dependencies
+        run: npm install --global pnpm@9.15.0 && pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: cargo check --locked --manifest-path src-tauri/Cargo.toml
+      - run: cargo test --locked --lib --manifest-path src-tauri/Cargo.toml
