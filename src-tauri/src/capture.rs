@@ -50,7 +50,34 @@ pub fn start(app: &tauri::AppHandle, kind: CaptureKind) -> Result<CaptureTask, S
                 let output = directory.join(format!("screenshot_{worker_id}.png"));
                 #[cfg(target_os = "macos")]
                 {
-                    crate::platform::capture(kind, &output)
+                    let state = crate::platform::capture(kind, &output)?;
+                    if let CaptureState::Ready { path, .. } = state {
+                        let root = crate::common::get_images_dir(&worker_app, "projects".into())?;
+                        let persist = || -> anyhow::Result<String> {
+                            let store = crate::projects::ProjectStore::open(root)?;
+                            let project = store.create(std::path::Path::new(&path), false)?;
+                            match store.list() {
+                                Ok(library) => {
+                                    for warning in library.warnings {
+                                        tracing::warn!(%warning);
+                                    }
+                                }
+                                Err(error) => {
+                                    tracing::warn!(%error, "Project saved; index rebuild pending")
+                                }
+                            }
+                            Ok(project.id)
+                        };
+                        let id = persist().map_err(|error| {
+                            format!("项目保存失败，原截图保留于 {path}：{error:#}")
+                        })?;
+                        Ok(CaptureState::Ready {
+                            path,
+                            project_id: Some(id),
+                        })
+                    } else {
+                        Ok(state)
+                    }
                 }
                 #[cfg(not(target_os = "macos"))]
                 {

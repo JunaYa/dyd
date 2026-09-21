@@ -3,6 +3,7 @@ import { LazyStore } from '@tauri-apps/plugin-store'
 import { useEffect, useState } from 'react'
 
 import { CapturePanel } from '../CapturePanel'
+import { ProjectHistory } from '../ProjectHistory'
 import { WindowLinks } from '../WindowLinks'
 
 const store = new LazyStore('settings.json')
@@ -129,12 +130,7 @@ export function Workspace({ page }: { page: string }) {
       )}
       {page === '/startup' && <StartDrawing />}
       {(page === '/editor' || page === '/preview') && <CapturePanel />}
-      {page === '/history' && (
-        <section className="workspace-card empty-state">
-          <h2>历史项目尚未接通</h2>
-          <p>此页暂不读取已有截图，不表示原文件已删除。历史索引将在后续版本接入。</p>
-        </section>
-      )}
+      {page === '/history' && <ProjectHistory />}
       <WindowLinks current={content.name} />
     </main>
   )

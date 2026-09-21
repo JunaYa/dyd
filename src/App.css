@@ -193,3 +193,41 @@ body {
 .capture-result {
   margin-top: 16px;
 }
+
+.project-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.project-list button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #d9dde3;
+  border-radius: 8px;
+  background: #fff;
+  color: #24272c;
+  font: inherit;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.project-list span {
+  color: #626873;
+  font-size: 14px;
+}
+.project-list button:focus-visible {
+  outline: 3px solid #3971c1;
+  outline-offset: 3px;
+}
+.project-list button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+@media (hover: hover) and (pointer: fine) {
+  .project-list button:hover {
+    background: #edf0f4;
+  }
+}

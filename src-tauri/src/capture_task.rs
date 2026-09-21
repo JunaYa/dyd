@@ -17,9 +17,14 @@ pub enum CaptureKind {
 #[serde(tag = "status", rename_all = "snake_case")]
 pub enum CaptureState {
     Capturing,
-    Ready { path: String },
+    Ready {
+        path: String,
+        project_id: Option<String>,
+    },
     Cancelled,
-    Failed { error: String },
+    Failed {
+        error: String,
+    },
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -141,6 +146,7 @@ mod tests {
             },
             CaptureState::Ready {
                 path: "/tmp/capture.png".into(),
+                project_id: None,
             },
         ] {
             let (task, started) = log.begin(CaptureKind::Window);

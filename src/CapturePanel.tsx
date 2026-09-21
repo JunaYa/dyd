@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 type Kind = 'screen' | 'select' | 'window'
 type Task = { id: string; kind: Kind } & (
   | { status: 'capturing' }
-  | { status: 'ready'; path: string }
+  | { status: 'ready'; path: string; project_id: string | null }
   | { status: 'cancelled' }
   | { status: 'failed'; error: string }
 )
@@ -111,6 +111,7 @@ export function CapturePanel() {
               <>
                 <p>截图已保存</p>
                 <p className="storage-path">{task.path}</p>
+                {task.project_id && <p>项目已加入历史记录。</p>}
                 <p className="muted">图片查看与编辑将在后续版本接入。</p>
               </>
             )}

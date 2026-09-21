@@ -38,6 +38,7 @@ pub fn capture(kind: CaptureKind, path: &Path) -> Result<CaptureState, String> {
         Ok(true) => match image::image_dimensions(path) {
             Ok((width, height)) if width > 0 && height > 0 => Ok(CaptureState::Ready {
                 path: path.to_string_lossy().into_owned(),
+                project_id: None,
             }),
             _ => {
                 std::fs::remove_file(path).map_err(|e| format!("截图无效，清理失败：{e}"))?;

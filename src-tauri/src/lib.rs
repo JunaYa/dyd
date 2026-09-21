@@ -11,6 +11,7 @@ mod constants;
 mod global_shortcut;
 mod menu;
 mod platform;
+mod projects;
 mod settings;
 mod window;
 
@@ -67,6 +68,22 @@ pub fn run() {
                 store.save()?;
             }
 
+            let recovery_app = app.handle().clone();
+            tauri::async_runtime::spawn_blocking(move || {
+                let recover = || -> anyhow::Result<()> {
+                    let root = common::get_images_dir(&recovery_app, "projects".into())
+                        .map_err(anyhow::Error::msg)?;
+                    let library = projects::ProjectStore::open(root)?.list()?;
+                    for warning in library.warnings {
+                        tracing::warn!(%warning, "Project recovery");
+                    }
+                    Ok(())
+                };
+                if let Err(error) = recover() {
+                    tracing::error!(%error, "Project recovery failed; history can retry");
+                }
+            });
+
             Ok(())
         })
         .menu(menu::get_app_menu)
@@ -79,6 +96,9 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             cmd::greet,
+            cmd::list_projects,
+            cmd::get_project,
+            cmd::import_legacy_projects,
             cmd::start_capture,
             cmd::request_capture_permission,
             cmd::get_capture_task,
