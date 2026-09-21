@@ -4,6 +4,7 @@ use tauri_plugin_store::StoreExt;
 
 mod capture;
 mod capture_task;
+mod capture_windows;
 mod cmd;
 mod common;
 mod constants;

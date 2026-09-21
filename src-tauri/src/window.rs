@@ -132,6 +132,7 @@ fn workspace_window(
 }
 
 pub fn open_workspace_window(app: &AppHandle, name: &str) -> Result<(), String> {
+    crate::capture::ensure_idle(app)?;
     let window = match name {
         "main" => {
             show_main_window(app);
@@ -232,6 +233,9 @@ pub fn hide_preview_window(app: &AppHandle) {
 }
 
 pub fn show_main_window(app: &AppHandle) {
+    if crate::capture::ensure_idle(app).is_err() {
+        return;
+    }
     let window = get_main_window(app);
     platform::show_main_window(&window);
 }
@@ -245,6 +249,9 @@ pub fn hide_main_window(app: &AppHandle) {
 }
 
 pub fn show_setting_window(app: &AppHandle) {
+    if crate::capture::ensure_idle(app).is_err() {
+        return;
+    }
     let window = get_setting_window(app);
     platform::show_setting_window(&window);
 }
@@ -258,6 +265,9 @@ pub fn hide_setting_window(app: &AppHandle) {
 }
 
 pub fn show_startup_window(app: &AppHandle) {
+    if crate::capture::ensure_idle(app).is_err() {
+        return;
+    }
     let window = get_startup_window(app);
     platform::show_startup_window(&window);
 }

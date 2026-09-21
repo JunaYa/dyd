@@ -1,7 +1,8 @@
 use crate::capture_task::{CaptureKind, CaptureTask, CaptureTasks};
 
 #[tauri::command]
-pub fn request_capture_permission() -> Result<bool, String> {
+pub fn request_capture_permission(app: tauri::AppHandle) -> Result<bool, String> {
+    crate::capture::ensure_idle(&app)?;
     #[cfg(target_os = "macos")]
     {
         Ok(crate::platform::request_capture_permission())

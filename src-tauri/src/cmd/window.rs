@@ -4,12 +4,14 @@ use crate::window;
 
 #[tauri::command]
 pub fn show_preview_window(app: AppHandle, path: String) -> Result<String, String> {
+    crate::capture::ensure_idle(&app)?;
     window::show_preview_window(&app);
     Ok(path)
 }
 
 #[tauri::command]
 pub fn update_preview_window(app: AppHandle) -> Result<(), String> {
+    crate::capture::ensure_idle(&app)?;
     window::update_preview_window(&app);
     Ok(())
 }
@@ -22,6 +24,7 @@ pub fn hide_preview_window(app: AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub fn show_main_window(app: AppHandle) -> Result<(), String> {
+    crate::capture::ensure_idle(&app)?;
     window::show_main_window(&app);
     Ok(())
 }
@@ -34,6 +37,7 @@ pub fn hide_main_window(app: AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub fn show_setting_window(app: AppHandle) -> Result<(), String> {
+    crate::capture::ensure_idle(&app)?;
     window::show_setting_window(&app);
     Ok(())
 }
