@@ -3,6 +3,7 @@ import { LazyStore } from '@tauri-apps/plugin-store'
 import { useEffect, useState } from 'react'
 
 import { CapturePanel } from '../CapturePanel'
+import { ProjectEditor } from '../ProjectEditor'
 import { ProjectHistory } from '../ProjectHistory'
 import { WindowLinks } from '../WindowLinks'
 
@@ -129,6 +130,7 @@ export function Workspace({ page }: { page: string }) {
         </section>
       )}
       {page === '/startup' && <StartDrawing />}
+      {page === '/editor' && <ProjectEditor />}
       {(page === '/editor' || page === '/preview') && <CapturePanel />}
       {page === '/history' && <ProjectHistory />}
       <WindowLinks current={content.name} />

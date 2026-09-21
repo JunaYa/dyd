@@ -1,7 +1,6 @@
 use crate::{
     capture_task::{CaptureKind, CaptureState, CaptureTask, CaptureTasks},
     capture_windows::HiddenWindows,
-    window,
 };
 use tauri::{Emitter, Manager};
 use tauri_plugin_dialog::DialogExt;
@@ -138,8 +137,10 @@ fn complete(app: &tauri::AppHandle, id: &str, state: CaptureState) {
         Ok(task) => {
             publish(app, &task);
             match task.state {
-                CaptureState::Ready { .. } => {
-                    window::show_preview_window(app);
+                CaptureState::Ready { project_id: Some(id), .. } => {
+                    if let Err(error) = crate::editor::open_project(app.clone(), id) {
+                        show_error(app, &format!("截图已保存，但编辑器未打开：{error}"));
+                    }
                 }
                 CaptureState::Failed { error } => {
                     tracing::warn!(%error, "Capture failed");

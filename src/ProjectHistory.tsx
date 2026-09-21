@@ -1,7 +1,7 @@
 import { invoke, isTauri } from '@tauri-apps/api/core'
 import { useEffect, useState } from 'react'
 
-interface Project {
+export interface Project {
   version: number
   id: string
   name: string
@@ -70,6 +70,7 @@ export function ProjectHistory() {
     setError('')
     setSelected(null)
     try {
+      await invoke('open_project', { id })
       setSelected(await invoke<Project>('get_project', { id }))
     } catch (error) {
       setError(String(error))
@@ -125,7 +126,7 @@ export function ProjectHistory() {
           <p className="storage-path">
             {selected.source_path ? `导入来源：${selected.source_path}` : '来源：DYD 截图'}
           </p>
-          <p className="muted">原图已独立保存。图片查看功能尚未接通。</p>
+          <p className="muted">已在编辑器中打开此项目。</p>
         </div>
       )}
       {library.warnings.length > 0 && (

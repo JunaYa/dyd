@@ -7,6 +7,7 @@ mod capture_task;
 mod capture_windows;
 mod cmd;
 mod common;
+mod editor;
 mod constants;
 mod global_shortcut;
 mod menu;
@@ -19,6 +20,7 @@ mod window;
 pub fn run() {
     tauri::Builder::default()
         .manage(capture_task::CaptureTasks::default())
+        .manage(editor::EditorState::default())
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
@@ -96,6 +98,8 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             cmd::greet,
+            editor::editor_ready,
+            editor::open_project,
             cmd::list_projects,
             cmd::get_project,
             cmd::import_legacy_projects,
