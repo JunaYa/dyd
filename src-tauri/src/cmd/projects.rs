@@ -32,3 +32,10 @@ pub async fn import_legacy_projects(app: tauri::AppHandle) -> Result<ImportRepor
     .map_err(|e| e.to_string())?
     .map_err(|e| format!("{e:#}"))
 }
+
+#[tauri::command]
+pub async fn get_project_png(app: tauri::AppHandle, id: String) -> Result<tauri::ipc::Response, String> {
+    let bytes = tauri::async_runtime::spawn_blocking(move || store(&app)?.png(&id))
+        .await.map_err(|e| e.to_string())?.map_err(|e| format!("{e:#}"))?;
+    Ok(tauri::ipc::Response::new(bytes))
+}

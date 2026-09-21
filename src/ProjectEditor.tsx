@@ -1,6 +1,7 @@
 import { invoke, isTauri } from '@tauri-apps/api/core'
 import { useEffect, useState } from 'react'
 
+import { ImageViewer } from './ImageViewer'
 import type { Project } from './ProjectHistory'
 
 interface Selection {
@@ -46,7 +47,7 @@ export function ProjectEditor() {
           <p>
             {project.width} × {project.height} 像素
           </p>
-          <p role="status">项目已加载，原图已保存。</p>
+          <ImageViewer project={project} />
         </div>
       ) : (
         <p role="status">{selection ? '截图或从历史记录打开一个项目。' : '正在加载项目…'}</p>

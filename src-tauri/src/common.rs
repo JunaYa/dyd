@@ -79,8 +79,7 @@ pub async fn copy_picture_to_clipboard(
 
 pub async fn get_image_base64_by_path(path: String) -> Result<String, String> {
     use base64::{
-        alphabet,
-        engine::{self, general_purpose},
+        engine::general_purpose,
         Engine as _,
     };
     // Validate file exists
@@ -95,7 +94,24 @@ pub async fn get_image_base64_by_path(path: String) -> Result<String, String> {
         .map_err(|e| e.to_string())?;
 
     // Convert to base64 string
-    let b64 = general_purpose::STANDARD.encode(img.as_bytes());
+    let b64 = general_purpose::STANDARD.encode(encode_png(&img)?);
 
     Ok(b64)
+}
+
+pub fn encode_png(image: &image::DynamicImage) -> Result<Vec<u8>, String> {
+    let mut output = std::io::Cursor::new(Vec::new());
+    image.write_to(&mut output, image::ImageFormat::Png).map_err(|e| e.to_string())?;
+    Ok(output.into_inner())
+}
+
+#[cfg(test)]
+mod encoding_tests {
+    #[test]
+    fn png_encoding_preserves_dimensions_and_transparency() {
+        let pixels = image::RgbaImage::from_pixel(7, 19, image::Rgba([12, 34, 56, 78]));
+        let bytes = super::encode_png(&image::DynamicImage::ImageRgba8(pixels.clone())).unwrap();
+        assert!(bytes.starts_with(b"\x89PNG\r\n\x1a\n"));
+        assert_eq!(image::load_from_memory(&bytes).unwrap().to_rgba8(), pixels);
+    }
 }

@@ -102,6 +102,7 @@ pub fn run() {
             editor::open_project,
             cmd::list_projects,
             cmd::get_project,
+            cmd::get_project_png,
             cmd::import_legacy_projects,
             cmd::start_capture,
             cmd::request_capture_permission,

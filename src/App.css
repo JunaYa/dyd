@@ -231,3 +231,35 @@ body {
     background: #edf0f4;
   }
 }
+
+.image-viewport {
+  height: min(55vh, 560px);
+  min-height: 240px;
+  overflow: auto;
+  border: 1px solid #d9dde3;
+  border-radius: 8px;
+  cursor: grab;
+  touch-action: none;
+  background: #eceef1;
+}
+.image-viewport:active {
+  cursor: grabbing;
+}
+.image-viewport:focus-visible {
+  outline: 3px solid #3971c1;
+  outline-offset: 3px;
+}
+.image-stage {
+  min-width: 100%;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+}
+.image-stage img {
+  display: block;
+  max-width: none;
+  user-select: none;
+  background-color: white;
+  background-image: conic-gradient(#ddd 25%, transparent 0 50%, #ddd 0 75%, transparent 0);
+  background-size: 16px 16px;
+}

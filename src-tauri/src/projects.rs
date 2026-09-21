@@ -138,6 +138,21 @@ impl ProjectStore {
         Ok(project)
     }
 
+    pub fn png(&self, id: &str) -> Result<Vec<u8>> {
+        self.get(id)?;
+        let path = self.root.join(id).join("original.bin");
+        if fs::metadata(&path)?.len() > 128 * 1024 * 1024 {
+            bail!("图片文件超过 128 MiB 限制");
+        }
+        let mut reader = image::ImageReader::open(path)?.with_guessed_format()?;
+        let mut limits = image::Limits::default();
+        limits.max_image_width = Some(16384);
+        limits.max_image_height = Some(16384);
+        limits.max_alloc = Some(128 * 1024 * 1024);
+        reader.limits(limits);
+        crate::common::encode_png(&reader.decode()?).map_err(anyhow::Error::msg)
+    }
+
     pub fn get(&self, id: &str) -> Result<Project> {
         if !valid_id(id) {
             bail!("无效项目 ID");
