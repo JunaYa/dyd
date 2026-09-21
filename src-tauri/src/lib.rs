@@ -64,6 +64,7 @@ pub fn run() {
             Ok(())
         })
         .menu(menu::get_app_menu)
+        .on_menu_event(menu::handle_app_menu_event)
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(global_shortcut::tauri_plugin_global_shortcut())
         .plugin(tauri_plugin_clipboard_manager::init())
@@ -72,6 +73,8 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             cmd::greet,
+            cmd::open_workspace_window,
+            cmd::finish_startup,
             cmd::show_preview_window,
             cmd::hide_preview_window,
             cmd::update_preview_window,

@@ -109,56 +109,69 @@ pub fn get_main_window(app: &AppHandle) -> WebviewWindow {
 }
 
 pub fn get_setting_window(app: &AppHandle) -> WebviewWindow {
-    if let Some(window) = app.get_webview_window(SETTING_WINDOW) {
-        window
-    } else {
-        let win_builder =
-            WebviewWindowBuilder::new(app, SETTING_WINDOW, WebviewUrl::App("/".into()))
-                .title("Setting")
-                .minimizable(false)
-                .maximizable(false)
-                .resizable(false)
-                .skip_taskbar(true)
-                .fullscreen(false)
-                .inner_size(600.0, 400.0);
+    workspace_window(app, SETTING_WINDOW, "/setting", "设置", 680.0, 620.0)
+        .expect("Unable to build settings window")
+}
 
-        let window = win_builder.build().unwrap();
-
-        // set background color only when building for macOS
-        #[cfg(target_os = "macos")]
-        {
-            use cocoa::appkit::{NSColor, NSWindow};
-            use cocoa::base::{id, nil};
-
-            let ns_window = window.ns_window().unwrap() as id;
-            unsafe {
-                let bg_color = NSColor::colorWithRed_green_blue_alpha_(
-                    nil,
-                    33.0 / 255.0,
-                    54.0 / 255.0,
-                    201.0 / 255.0,
-                    0.0,
-                );
-                ns_window.setBackgroundColor_(bg_color);
-            }
-            window
-        }
+fn workspace_window(
+    app: &AppHandle,
+    label: &str,
+    route: &str,
+    title: &str,
+    width: f64,
+    height: f64,
+) -> tauri::Result<WebviewWindow> {
+    if let Some(window) = app.get_webview_window(label) {
+        return Ok(window);
     }
+    WebviewWindowBuilder::new(app, label, WebviewUrl::App(route.into()))
+        .title(title)
+        .inner_size(width, height)
+        .min_inner_size(360.0, 360.0)
+        .build()
+}
+
+pub fn open_workspace_window(app: &AppHandle, name: &str) -> Result<(), String> {
+    let window = match name {
+        "main" => {
+            show_main_window(app);
+            return get_main_window(app)
+                .set_focus()
+                .map_err(|error| error.to_string());
+        }
+        "setting" => workspace_window(app, SETTING_WINDOW, "/setting", "设置", 680.0, 620.0),
+        "startup" => workspace_window(
+            app,
+            STARTUP_WINDOW,
+            "/startup",
+            "欢迎使用 DYD",
+            600.0,
+            640.0,
+        ),
+        "editor" => workspace_window(app, "editor", "/editor", "图片编辑器", 1000.0, 720.0),
+        "history" => workspace_window(app, "history", "/history", "历史记录", 800.0, 640.0),
+        _ => return Err("Unknown workspace window".to_string()),
+    }
+    .map_err(|error| error.to_string())?;
+    window.unminimize().map_err(|error| error.to_string())?;
+    window.show().map_err(|error| error.to_string())?;
+    window.set_focus().map_err(|error| error.to_string())
 }
 
 pub fn get_preview_window(app: &AppHandle) -> WebviewWindow {
     if let Some(window) = app.get_webview_window(PREVIEW_WINDOW) {
         window
     } else {
-        let window = WebviewWindowBuilder::new(app, PREVIEW_WINDOW, WebviewUrl::App("/".into()))
-            .title("preview")
-            .decorations(false)
-            .transparent(true)
-            .visible(true)
-            .skip_taskbar(true)
-            .shadow(false)
-            .resizable(false)
-            .inner_size(240.0, 240.0);
+        let window =
+            WebviewWindowBuilder::new(app, PREVIEW_WINDOW, WebviewUrl::App("/preview".into()))
+                .title("preview")
+                .decorations(false)
+                .transparent(true)
+                .visible(true)
+                .skip_taskbar(true)
+                .shadow(false)
+                .resizable(false)
+                .inner_size(240.0, 240.0);
 
         let window = window.build().expect("Unable to build startup window");
         #[cfg(target_os = "macos")]
@@ -187,42 +200,15 @@ pub fn get_preview_window(app: &AppHandle) -> WebviewWindow {
 }
 
 pub fn get_startup_window(app: &AppHandle) -> WebviewWindow {
-    if let Some(window) = app.get_webview_window(STARTUP_WINDOW) {
-        window
-    } else {
-        let win_builder =
-            WebviewWindowBuilder::new(app, STARTUP_WINDOW, WebviewUrl::App("/".into()))
-                .title("Startup")
-                .decorations(true)
-                .transparent(true)
-                .visible(true)
-                .skip_taskbar(false)
-                .shadow(true)
-                .resizable(false)
-                .inner_size(360.0, 280.0);
-
-        let window = win_builder.build().unwrap();
-
-        // set background color only when building for macOS
-        #[cfg(target_os = "macos")]
-        {
-            use cocoa::appkit::{NSColor, NSWindow};
-            use cocoa::base::{id, nil};
-
-            let ns_window = window.ns_window().unwrap() as id;
-            unsafe {
-                let bg_color = NSColor::colorWithRed_green_blue_alpha_(
-                    nil,
-                    33.0 / 255.0,
-                    54.0 / 255.0,
-                    201.0 / 255.0,
-                    0.0,
-                );
-                ns_window.setBackgroundColor_(bg_color);
-            }
-            window
-        }
-    }
+    workspace_window(
+        app,
+        STARTUP_WINDOW,
+        "/startup",
+        "欢迎使用 DYD",
+        600.0,
+        640.0,
+    )
+    .expect("Unable to build startup window")
 }
 
 pub fn show_preview_window(app: &AppHandle) -> WebviewWindow {

@@ -216,3 +216,11 @@ fn handle_tray_menu_events(app: &AppHandle, event: MenuEvent) {
         }
     }
 }
+
+pub fn handle_app_menu_event(app: &AppHandle, event: MenuEvent) {
+    if event.id.as_ref() == MenuID::SHOW_SETTING_WINDOW.to_string() {
+        if let Err(error) = window::open_workspace_window(app, "setting") {
+            tracing::error!(%error, "Could not open settings window");
+        }
+    }
+}

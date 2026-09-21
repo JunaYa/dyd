@@ -12,25 +12,15 @@
   "app": {
     "withGlobalTauri": true,
     "macOSPrivateApi": true,
-    "windows": [
-      {
-        "title": "Setting",
-        "label": "setting",
-        "url": "/setting",
-        "minimizable": false,
-        "maximizable": false,
-        "fullscreen": false,
-        "skipTaskbar": true,
-        "visible": false,
-        "height": 400,
-        "width": 600
-    }
-    ],
+    "windows": [],
     "security": {
       "csp": {
         "default-src": "'self' customprotocol: asset:",
         "connect-src": "'self' ipc: http://ipc.localhost",
-        "font-src": ["'self'", "https://fonts.gstatic.com"],
+        "font-src": [
+          "'self'",
+          "https://fonts.gstatic.com"
+        ],
         "img-src": "'self' asset: http://asset.localhost blob: data:",
         "style-src": "'unsafe-inline' 'self' https://fonts.googleapis.com"
       },
@@ -38,7 +28,10 @@
       "assetProtocol": {
         "enable": true,
         "scope": {
-          "allow": ["$APPDATA/**", "$RESOURCE/**"]
+          "allow": [
+            "$APPDATA/**",
+            "$RESOURCE/**"
+          ]
         }
       }
     }

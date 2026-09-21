@@ -1,55 +1,25 @@
-import { Excalidraw, MainMenu } from '@excalidraw/excalidraw'
+import { lazy, Suspense } from 'react'
 
-import '@excalidraw/excalidraw/index.css'
+import { Workspace } from './pages/Workspace'
+
 import './App.css'
 
-function App() {
-  const renderMenu = () => {
-    return (
-      <MainMenu>
-        <MainMenu.DefaultItems.LoadScene />
-        <MainMenu.DefaultItems.SaveToActiveFile />
-        {/* FIXME we should to test for this inside the item itself */}
-        <MainMenu.DefaultItems.Export />
-        {/* FIXME we should to test for this inside the item itself */}
-        <MainMenu.DefaultItems.SaveAsImage />
-        {/* <MainMenu.DefaultItems.SearchMenu /> */}
-        <MainMenu.DefaultItems.Help />
-        <MainMenu.DefaultItems.ClearCanvas />
-        <MainMenu.Separator />
-        <MainMenu.DefaultItems.ToggleTheme />
-        <MainMenu.DefaultItems.ChangeCanvasBackground />
-      </MainMenu>
-    )
-  }
+const Whiteboard = lazy(() => import('./pages/Whiteboard'))
 
-  return (
-    <div className="container">
-      <Excalidraw
-        initialData={{
-          appState: { viewBackgroundColor: '#FFFFFF00' },
-        }}
-        renderTopRightUI={() => {
-          return (
-            <button
-              style={{
-                background: '#70b1ec',
-                border: 'none',
-                color: '#fff',
-                width: 'max-content',
-                fontWeight: 'bold',
-              }}
-              // oxlint-disable-next-line no-alert -- This demo control intentionally opens a native alert.
-              onClick={() => window.alert('This is dummy top right UI')}
-            >
-              Click me
-            </button>
-          )
-        }}
-      >
-        {renderMenu()}
-      </Excalidraw>
-    </div>
+function App() {
+  const page = window.location.pathname.replace(/\/$/, '') || '/'
+  return page === '/' ? (
+    <Suspense
+      fallback={
+        <p className="loading-page" role="status">
+          正在加载白板…
+        </p>
+      }
+    >
+      <Whiteboard />
+    </Suspense>
+  ) : (
+    <Workspace page={page} />
   )
 }
 
