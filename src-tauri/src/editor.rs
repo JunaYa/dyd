@@ -30,7 +30,11 @@ pub fn open(app: &tauri::AppHandle, project: Project) -> Result<(), String> {
 
 #[tauri::command]
 pub fn editor_ready(state: tauri::State<'_, EditorState>) -> Result<Selection, String> {
-    state.0.lock().map(|value| value.clone()).map_err(|e| e.to_string())
+    state
+        .0
+        .lock()
+        .map(|value| value.clone())
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -52,8 +56,13 @@ mod tests {
         let mut selection = Selection::default();
         for id in ["first", "first", "second"] {
             selection.select(Project {
-                version: 1, id: id.into(), name: id.into(), created_at: "2026-09-21T00:00:00Z".into(),
-                width: 2, height: 2, source_path: None,
+                version: 1,
+                id: id.into(),
+                name: id.into(),
+                created_at: "2026-09-21T00:00:00Z".into(),
+                width: 2,
+                height: 2,
+                source_path: None,
             });
         }
         let ready = selection.clone();

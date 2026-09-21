@@ -263,3 +263,14 @@ body {
   background-image: conic-gradient(#ddd 25%, transparent 0 50%, #ddd 0 75%, transparent 0);
   background-size: 16px 16px;
 }
+.action-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.action-choice input {
+  width: 18px;
+  height: 18px;
+}

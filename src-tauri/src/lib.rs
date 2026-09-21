@@ -8,6 +8,7 @@ mod capture_windows;
 mod cmd;
 mod common;
 mod editor;
+mod delivery;
 mod constants;
 mod global_shortcut;
 mod menu;
@@ -98,6 +99,10 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             cmd::greet,
+            delivery::get_capture_actions,
+            delivery::set_capture_actions,
+            delivery::copy_project,
+            delivery::save_project,
             editor::editor_ready,
             editor::open_project,
             cmd::list_projects,

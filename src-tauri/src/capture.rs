@@ -70,6 +70,7 @@ pub fn start(app: &tauri::AppHandle, kind: CaptureKind) -> Result<CaptureTask, S
                         let id = persist().map_err(|error| {
                             format!("项目保存失败，原截图保留于 {path}：{error:#}")
                         })?;
+                        crate::delivery::after_capture(&worker_app, &id)?;
                         Ok(CaptureState::Ready {
                             path,
                             project_id: Some(id),
@@ -137,9 +138,17 @@ fn complete(app: &tauri::AppHandle, id: &str, state: CaptureState) {
         Ok(task) => {
             publish(app, &task);
             match task.state {
-                CaptureState::Ready { project_id: Some(id), .. } => {
-                    if let Err(error) = crate::editor::open_project(app.clone(), id) {
-                        show_error(app, &format!("截图已保存，但编辑器未打开：{error}"));
+                CaptureState::Ready {
+                    project_id: Some(id),
+                    ..
+                } => {
+                    let open_editor = crate::delivery::get_capture_actions(app.clone())
+                        .map(|actions| actions.editor)
+                        .unwrap_or(true);
+                    if open_editor {
+                        if let Err(error) = crate::editor::open_project(app.clone(), id) {
+                            show_error(app, &format!("截图已保存，但编辑器未打开：{error}"));
+                        }
                     }
                 }
                 CaptureState::Failed { error } => {

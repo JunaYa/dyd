@@ -1,6 +1,7 @@
 import { invoke, isTauri } from '@tauri-apps/api/core'
 import { useEffect, useState } from 'react'
 
+import { ProjectDelivery } from './CaptureActions'
 import { ImageViewer } from './ImageViewer'
 import type { Project } from './ProjectHistory'
 
@@ -47,6 +48,7 @@ export function ProjectEditor() {
           <p>
             {project.width} × {project.height} 像素
           </p>
+          <ProjectDelivery id={project.id} />
           <ImageViewer project={project} />
         </div>
       ) : (

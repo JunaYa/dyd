@@ -2,6 +2,7 @@ import { invoke, isTauri } from '@tauri-apps/api/core'
 import { LazyStore } from '@tauri-apps/plugin-store'
 import { useEffect, useState } from 'react'
 
+import { CaptureActions } from '../CaptureActions'
 import { CapturePanel } from '../CapturePanel'
 import { ProjectEditor } from '../ProjectEditor'
 import { ProjectHistory } from '../ProjectHistory'
@@ -103,7 +104,12 @@ export function Workspace({ page }: { page: string }) {
         <h1>{content.title}</h1>
         <p>{content.description}</p>
       </header>
-      {page === '/setting' && <Settings />}
+      {page === '/setting' && (
+        <>
+          <Settings />
+          <CaptureActions />
+        </>
+      )}
       {(page === '/setting' || page === '/startup') && (
         <section className="workspace-card" aria-labelledby="shortcuts-heading">
           <h2 id="shortcuts-heading">常用快捷键</h2>
